@@ -167,7 +167,7 @@ with st.sidebar:
 
     # ── Reset button ─────────────────────────────────────────────────────────
     if st.button("🔄 Reset All Filters"):
-        st.experimental_rerun()
+        st.rerun()
 
 
 # ════════════════════════════════════════════════════════════════════════════
@@ -275,20 +275,20 @@ with tabs[0]:
     with col1:
         st.markdown(f"**🥧 Pie Chart — {pie_country} ({selected_year})**")
         fig = chart_pie(filtered_df, pie_country, selected_year)
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
         st.caption("Proportional electricity generation mix for the selected country and year.")
 
     with col2:
         st.markdown(f"**📊 Count Plot — Records by Category**")
         fig = chart_count(filtered_df)
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
         st.caption("Number of data records per electricity data category in the filtered dataset.")
 
     st.divider()
     st.markdown("<div class='section-header'>CO₂ Intensity Distribution</div>",
                 unsafe_allow_html=True)
     fig = chart_histogram(filtered_df)
-    st.pyplot(fig)
+    st.plotly_chart(fig, use_container_width=True)
     st.caption("Frequency distribution of CO₂ intensity (gCO₂e/kWh) across all countries and years.")
 
 
@@ -314,13 +314,13 @@ with tabs[1]:
     with col1:
         st.markdown("**📈 Line Chart — Trend Over Time**")
         fig = chart_line(filtered_df, line_countries, line_var)
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
         st.caption("Year-by-year trend for the selected variable and countries.")
 
     with col2:
         st.markdown("**🌊 Area Chart — Cumulative Share**")
         fig = chart_area(filtered_df, line_countries, "Renewables")
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
         st.caption("Renewables share over time (area = overlapping, non-stacked for easy reading).")
 
 
@@ -342,13 +342,13 @@ with tabs[2]:
     with col1:
         st.markdown(f"**📊 Bar Chart — {bar_var} ({selected_year})**")
         fig = chart_bar(filtered_df, bar_var, selected_year, top_n)
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
         st.caption("Horizontal bar chart ranking countries by the selected variable.")
 
     with col2:
         st.markdown(f"**📦 Box Plot — EU vs Non-EU**")
         fig = chart_box(filtered_df, bar_var)
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
         st.caption("Spread and outliers of the variable for EU vs Non-EU countries.")
 
 
@@ -361,7 +361,7 @@ with tabs[3]:
     with col1:
         st.markdown(f"**🔵 Scatter Plot — Renewables vs CO₂ ({selected_year})**")
         fig = chart_scatter(filtered_df, selected_year)
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
         st.caption("Each point is a country. Trend line shows inverse correlation.")
 
     with col2:
@@ -372,14 +372,14 @@ with tabs[3]:
             key="vio_var",
         )
         fig = chart_violin(filtered_df, violin_var)
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
         st.caption("Distribution shape and probability density across decades.")
 
     st.divider()
     st.markdown(f"<div class='section-header'>Heatmap — Correlation Matrix ({selected_year})</div>",
                 unsafe_allow_html=True)
     fig = chart_heatmap(filtered_df, selected_year)
-    st.pyplot(fig)
+    st.plotly_chart(fig, use_container_width=True)
     st.caption("Pearson correlation between key electricity variables across European countries.")
 
 
@@ -389,7 +389,7 @@ with tabs[4]:
                 unsafe_allow_html=True)
     st.markdown(f"**Renewables (x) · CO₂ Intensity (y) · Bubble Size = Demand — [{selected_year}]**")
     fig = chart_bubble(filtered_df, selected_year)
-    st.pyplot(fig)
+    st.plotly_chart(fig, use_container_width=True)
     st.caption(
         "Bubble size represents total electricity demand (TWh). "
         "Color scale: red = high CO₂, green = low CO₂. "
@@ -458,7 +458,7 @@ st.markdown("""
 <div style='text-align:center; color:#475569; font-size:0.8rem; padding: 10px 0;'>
   ⚡ Ember Yearly Electricity Dashboard &nbsp;|&nbsp;
   Data: Ember Climate &nbsp;|&nbsp;
-  Built with Streamlit · Pandas · Matplotlib · Seaborn &nbsp;|&nbsp;
+  Built with Streamlit · Pandas · Plotly &nbsp;|&nbsp;
   EDA Course Project
 </div>
 """, unsafe_allow_html=True)
