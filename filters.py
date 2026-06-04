@@ -14,7 +14,14 @@ DATA_PATH = "data/europe_yearly_full_release_long_format.csv"
 # ─────────────────────────────────────────────
 
 def load_data() -> pd.DataFrame:
-    return _load()
+    try:
+        import streamlit as st
+        @st.cache_data
+        def _inner():
+            return _load()
+        return _inner()
+    except Exception:
+        return _load()
 
 
 def _load() -> pd.DataFrame:
@@ -22,10 +29,10 @@ def _load() -> pd.DataFrame:
 
     # ── Basic cleaning ──────────────────────────────────────────────────
     df.columns = df.columns.str.strip()
-    df["Year"]  = pd.to_numeric(df["Year"],  errors="coerce").astype("Int64")
+    df["Year"] = pd.to_numeric(df["Year"], errors="coerce").astype("Int64")
     df["Value"] = pd.to_numeric(df["Value"], errors="coerce")
     df["YoY absolute change"] = pd.to_numeric(df["YoY absolute change"], errors="coerce")
-    df["YoY % change"]        = pd.to_numeric(df["YoY % change"],        errors="coerce")
+    df["YoY % change"] = pd.to_numeric(df["YoY % change"], errors="coerce")
 
     # Drop rows where both Year and Value are null
     df.dropna(subset=["Year", "Value"], how="all", inplace=True)
@@ -66,7 +73,7 @@ def apply_filters(
     variables: list,
     search_text: str = "",
 ) -> pd.DataFrame:
-    """Apply all filters and return filtered DataFrame."""
+    """Apply all sidebar filters and return filtered DataFrame."""
     filtered = df.copy()
 
     if countries:
@@ -100,10 +107,10 @@ def apply_filters(
 
 def compute_kpis(df: pd.DataFrame, filtered: pd.DataFrame) -> dict:
     total_records = len(filtered)
-    latest_year   = int(filtered["Year"].max()) if not filtered.empty else "N/A"
+    latest_year = int(filtered["Year"].max()) if not filtered.empty else "N/A"
 
     co2_rows = filtered[filtered["Variable"] == "CO2 intensity"]["Value"]
-    avg_co2  = round(co2_rows.mean(), 1) if not co2_rows.empty else "N/A"
+    avg_co2 = round(co2_rows.mean(), 1) if not co2_rows.empty else "N/A"
 
     ren = filtered[
         (filtered["Variable"] == "Renewables")
@@ -112,9 +119,9 @@ def compute_kpis(df: pd.DataFrame, filtered: pd.DataFrame) -> dict:
         & filtered["is_country"]
     ]
     if not ren.empty:
-        idx            = ren["Value"].idxmax()
+        idx = ren["Value"].idxmax()
         top_ren_country = ren.loc[idx, "Area"]
-        top_ren_val    = round(ren.loc[idx, "Value"], 1)
+        top_ren_val = round(ren.loc[idx, "Value"], 1)
     else:
         top_ren_country, top_ren_val = "N/A", "N/A"
 
@@ -124,18 +131,18 @@ def compute_kpis(df: pd.DataFrame, filtered: pd.DataFrame) -> dict:
         & filtered["is_country"]
     ]
     if not co2_latest.empty:
-        idx2            = co2_latest["Value"].idxmax()
+        idx2 = co2_latest["Value"].idxmax()
         top_co2_country = co2_latest.loc[idx2, "Area"]
-        top_co2_val    = round(co2_latest.loc[idx2, "Value"], 1)
+        top_co2_val = round(co2_latest.loc[idx2, "Value"], 1)
     else:
         top_co2_country, top_co2_val = "N/A", "N/A"
 
     return {
-        "total_records":    total_records,
-        "latest_year":      latest_year,
+        "total_records": total_records,
+        "latest_year": latest_year,
         "avg_co2_intensity": avg_co2,
-        "top_ren_country":  top_ren_country,
-        "top_ren_val":      top_ren_val,
-        "top_co2_country":  top_co2_country,
-        "top_co2_val":      top_co2_val,
+        "top_ren_country": top_ren_country,
+        "top_ren_val": top_ren_val,
+        "top_co2_country": top_co2_country,
+        "top_co2_val": top_co2_val,
     }
